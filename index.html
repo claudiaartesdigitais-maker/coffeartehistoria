@@ -8,9 +8,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     body, html { 
-      margin: 0; padding: 0; width: 100%;
+      margin: 0; padding: 0; width: 100%; height: 100%;
       background: #fff4e6; overflow-x: hidden;
       font-family: 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
     header { 
@@ -32,7 +33,7 @@
       60% {transform: translateX(3px);}
     }
 
-    /* CARROSSEL GRANDE (Estilo Rádio) */
+    /* CARROSSEL GRANDE */
     .swiper { width: 100%; height: 500px; margin-top: 5px; }
     .swiper-slide { display: flex; justify-content: center; align-items: center; width: auto; }
     
@@ -60,27 +61,68 @@
       box-shadow: 0 4px 12px rgba(212, 163, 115, 0.4); text-transform: uppercase; letter-spacing: 1px;
     }
 
-    /* JANELA POP-UP (MODAL) */
+    /* POP-UP (MODAL) CORRIGIDO - CENTRALIZAÇÃO MATADORA */
     .modal {
-      display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center; padding: 20px;
+      display: none; 
+      position: fixed; 
+      z-index: 9999; 
+      left: 0; top: 0; 
+      width: 100vw; height: 100vh;
+      background-color: rgba(0,0,0,0.75); 
+      
+      /* Força a centralização matemática perfeita na tela */
+      display: none;
+      align-items: center; 
+      justify-content: center; 
+      
+      box-sizing: border-box;
     }
-    .modal-content {
-      background-color: white; border-radius: 20px; max-width: 450px; width: 100%;
-      overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: abrirModal 0.3s ease; position: relative;
-    }
-    @keyframes abrirModal { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    .modal-fechar { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 20px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
-    .modal-img { width: 100%; height: 220px; object-fit: cover; }
-    .modal-corpo { padding: 25px; background: white; max-height: 280px; overflow-y: auto; }
-    .modal-titulo { font-size: 20px; font-weight: bold; color: #4a332d; text-transform: uppercase; margin: 0 0 12px 0; border-bottom: 2px solid #efe4d8; padding-bottom: 5px; }
     
-    /* PRESERVA AS QUEBRAS DE LINHA E PARÁGRAFOS DA PLANILHA */
-    .modal-texto { font-size: 15px; color: #444; line-height: 1.6; margin: 0; text-align: justify; white-space: pre-line; }
+    .modal-content {
+      background-color: white; 
+      border-radius: 24px; 
+      width: 90%; 
+      max-width: 380px; /* Impede que fique largo demais em telas maiores */
+      max-height: 82vh; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.6); 
+      animation: abrirModal 0.25s ease-out; 
+      position: relative;
+      margin: auto; /* Garante o alinhamento nos eixos do dispositivo */
+    }
+    
+    @keyframes abrirModal { 
+      from { transform: scale(0.93); opacity: 0; } 
+      to { transform: scale(1); opacity: 1; } 
+    }
+    
+    .modal-fechar { 
+      position: absolute; top: 12px; right: 12px; background: rgba(74, 51, 45, 0.9); 
+      color: white; border: none; width: 36px; height: 36px; border-radius: 50%; 
+      font-size: 22px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; 
+    }
+    
+    .modal-img-container { width: 100%; height: 180px; min-height: 180px; position: relative; }
+    .modal-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    
+    .modal-corpo { 
+      padding: 20px; 
+      background: white; 
+      overflow-y: auto; 
+      flex-grow: 1;
+      -webkit-overflow-scrolling: touch;
+    }
+    .modal-titulo { font-size: 18px; font-weight: bold; color: #4a332d; text-transform: uppercase; margin: 0 0 12px 0; border-bottom: 2px solid #efe4d8; padding-bottom: 6px; }
+    .modal-texto { font-size: 14.5px; color: #444; line-height: 1.6; margin: 0; text-align: justify; white-space: pre-line; }
     
     @media (max-width: 600px) {
       .swiper { height: 460px; }
       .card { width: 280px; height: 410px; }
+      .modal-content { width: 88%; max-height: 78vh; }
+      .modal-img-container { height: 160px; min-height: 160px; }
+      .modal-corpo { padding: 16px; }
     }
   </style>
 </head>
@@ -107,7 +149,9 @@
   <div id="modalHistoria" class="modal" onclick="fecharModalExterno(event)">
     <div class="modal-content">
         <button class="modal-fechar" onclick="fecharModal()">×</button>
-        <img id="modalImg" src="" class="modal-img">
+        <div class="modal-img-container">
+            <img id="modalImg" src="" class="modal-img">
+        </div>
         <div class="modal-corpo">
             <h3 class="modal-titulo">☕ Nossa História</h3>
             <p id="modalTexto" class="modal-texto"></p>
@@ -117,7 +161,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // Link da sua planilha já configurado
     const CSV_HISTORIAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQopJa1EmJJ43rz6gcZem_2vSA7A3p9sottt3BpNCd4pexNqyNrdKQoO7RCCL2qkLjvhsG5qPVJqkHU/pub?output=csv';
     
     function limpar(t) { return t ? t.replace(/^"|"$/g, '').trim() : ""; }
@@ -125,9 +168,18 @@
     function abrirModal(foto, historia) {
         document.getElementById('modalTexto').innerText = historia;
         document.getElementById('modalImg').src = foto;
-        document.getElementById('modalHistoria').style.display = 'flex';
+        
+        // Força o contêiner principal a usar o modelo Flex para alinhar no centro certinho
+        const modal = document.getElementById('modalHistoria');
+        modal.style.display = 'flex'; 
+        
+        document.body.style.overflow = 'hidden'; 
     }
-    function fecharModal() { document.getElementById('modalHistoria').style.display = 'none'; }
+    
+    function fecharModal() { 
+        document.getElementById('modalHistoria').style.display = 'none'; 
+        document.body.style.overflow = ''; 
+    }
     function fecharModalExterno(e) { if(e.target.id === 'modalHistoria') fecharModal(); }
 
     async function carregarHistorias() {
@@ -135,7 +187,6 @@
         const res = await fetch(CSV_HISTORIAS_URL + '&t=' + new Date().getTime());
         const data = await res.text();
         
-        // CORRIGIDO: Variável unificada sem espaço para evitar travamento
         const linhasValidas = [];
         let linhaAtual = "";
         let dentroDeAspas = false;
@@ -155,7 +206,6 @@
 
         let listaCards = [];
 
-        // Ignora o cabeçalho (i = 1)
         for (let i = 1; i < linhasValidas.length; i++) {
           const cols = linhasValidas[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
           if (cols.length < 2) continue;
