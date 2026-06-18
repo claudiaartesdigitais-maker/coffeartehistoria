@@ -1,1 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CoffeeArt - Histórias do Café</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body, html { 
+      margin: 0; padding: 0; width: 100%;
+      background: #fff4e6; overflow-x: hidden;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+    }
 
+    header { 
+      width: 100%; display: flex; flex-direction: column; align-items: center; padding: 20px 0 10px 0;
+    }
+    .card-titulo {
+      width: 90%; max-width: 600px; background-color: #4a332d; color: #d4a373;
+      padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center;
+    }
+    .card-titulo span { font-size: 18px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+    
+    .arrasta-indicador {
+      text-align: center; color: #4a332d; font-size: 13px; font-weight: bold; margin: 10px 0;
+      letter-spacing: 1px; animation: bounce 2s infinite; opacity: 0.8;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {transform: translateX(0);}
+      40% {transform: translateX(5px);}
+      60% {transform: translateX(3px);}
+    }
+
+    /* CARROSSEL GRANDE (Estilo Rádio) */
+    .swiper { width: 100%; height: 500px; margin-top: 5px; }
+    .swiper-slide { display: flex; justify-content: center; align-items: center; width: auto; }
+    
+    .card { 
+      border-radius: 20px; overflow: hidden; background: #ffffff; border: 1px solid #efe4d8; 
+      display: block; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 320px; height: 450px;
+    }
+    .card img { height: 100%; width: 100%; object-fit: cover; display: block; }
+
+    /* BOTÃO INTERNO SAIBA MAIS */
+    .btn-saiba-mais { 
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #4a332d; color: #ffffff; padding: 12px 24px; border-radius: 30px; 
+      font-size: 14px; font-weight: bold; z-index: 10; border: 2px solid #d4a373;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-transform: uppercase; cursor: pointer;
+      white-space: nowrap; transition: 0.2s;
+    }
+    .btn-saiba-mais:active { transform: translateX(-50%) scale(0.95); }
+
+    /* BOTÃO FIXO PARA VOLTAR AO CARDÁPIO */
+    .footer-action { text-align: center; padding: 20px; background: #fff4e6; }
+    .btn-cardapio {
+      display: inline-block; background-color: #d4a373; color: #4a332d; text-decoration: none;
+      padding: 14px 35px; border-radius: 30px; font-weight: bold; font-size: 16px;
+      box-shadow: 0 4px 12px rgba(212, 163, 115, 0.4); text-transform: uppercase; letter-spacing: 1px;
+    }
+
+    /* JANELA POP-UP (MODAL) */
+    .modal {
+      display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-content {
+      background-color: white; border-radius: 20px; max-width: 450px; width: 100%;
+      overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: abrirModal 0.3s ease; position: relative;
+    }
+    @keyframes abrirModal { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .modal-fechar { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 20px; font-weight: bold; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
+    .modal-img { width: 100%; height: 220px; object-fit: cover; }
+    .modal-corpo { padding: 25px; background: white; max-height: 280px; overflow-y: auto; }
+    .modal-titulo { font-size: 20px; font-weight: bold; color: #4a332d; text-transform: uppercase; margin: 0 0 12px 0; border-bottom: 2px solid #efe4d8; padding-bottom: 5px; }
+    
+    /* PRESERVA AS QUEBRAS DE LINHA E PARÁGRAFOS DA PLANILHA */
+    .modal-texto { font-size: 15px; color: #444; line-height: 1.6; margin: 0; text-align: justify; white-space: pre-line; }
+    
+    @media (max-width: 600px) {
+      .swiper { height: 460px; }
+      .card { width: 280px; height: 410px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="card-titulo">
+        <span>📖 Experiência CoffeeArt</span>
+    </div>
+  </header>
+
+  <div class="arrasta-indicador">CONHEÇA NOSSOS GRÃOS ➔</div>
+
+  <!-- CARROSSEL DE HISTÓRIAS -->
+  <div class="swiper">
+    <div class="swiper-wrapper" id="track"></div>
+  </div>
+
+  <!-- LINK PARA O SEU CARDÁPIO PRINCIPAL -->
+  <div class="footer-action">
+    <a href="https://cardapiocoffeeartes.pedidoon.net/" class="btn-cardapio">
+        🛒 IR PARA O CARDÁPIO
+    </a>
+  </div>
+
+  <!-- POP-UP DA HISTÓRIA -->
+  <div id="modalHistoria" class="modal" onclick="fecharModalExterno(event)">
+    <div class="modal-content">
+        <button class="modal-fechar" onclick="fecharModal()">×</button>
+        <img id="modalImg" src="" class="modal-img">
+        <div class="modal-corpo">
+            <h3 class="modal-titulo">☕ Nossa História</h3>
+            <p id="modalTexto" class="modal-texto"></p>
+        </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    // Substitua o link abaixo pela nova URL do Google Sheets publicada como .csv
+    const CSV_HISTORIAS_URL = 'SUA_NOVA_URL_DO_GOOGLE_SHEETS_AQUI';
+    
+    // Mantém a limpeza padrão preservando quebras de linha internas
+    function limpar(t) { return t ? t.replace(/^"|"$/g, '').trim() : ""; }
+
+    // CONTROLE DO POP-UP (MODAL)
+    function abrirModal(foto, historia) {
+        document.getElementById('modalTexto').innerText = historia;
+        document.getElementById('modalImg').src = foto;
+        document.getElementById('modalHistoria').style.display = 'flex';
+    }
+    function fecharModal() { document.getElementById('modalHistoria').style.display = 'none'; }
+    function fecharModalExterno(e) { if(e.target.id === 'modalHistoria') fecharModal(); }
+
+    async function carregarHistorias() {
+      try {
+        const res = await fetch(CSV_HISTORIAS_URL + (CSV_HISTORIAS_URL.includes('?') ? '&' : '?') + 't=' + new Date().getTime());
+        const data = await res.text();
+        const rows = data.split(/\r?\n/);
+        
+        let listaCards = [];
+
+        // Ignora a linha 1 de cabeçalho (Foto / Historia)
+        for (let i = 1; i < rows.length; i++) {
+          if (!rows[i]) continue;
+          
+          // Regex para separar Coluna A e Coluna B sem quebrar os parágrafos entre aspas
+          const cols = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+          if (cols.length < 2) continue;
+
+          const foto = limpar(cols[0]);       // Coluna A (Link da Imagem)
+          const historia = limpar(cols[1]);   // Coluna B (Texto Completo)
+
+          if (foto.includes("http")) {
+             listaCards.push({ foto, historia });
+          }
+        }
+
+        if (listaCards.length === 0) return;
+
+        document.getElementById("track").innerHTML = listaCards.map((item, index) => {
+          // Usamos uma variável global temporária para evitar que as quebras de linha quebrem o HTML do botão onClick
+          window[`historia_${index}`] = item.historia;
+          
+          return `
+            <div class="swiper-slide">
+              <div class="card">
+                <img src="${item.foto}" onerror="this.src='https://via.placeholder.com/300x450?text=CoffeeArt'">
+                <button class="btn-saiba-mais" onclick="abrirModal('${item.foto}', window['historia_${index}'])">🔍 SAIBA MAIS</button>
+              </div>
+            </div>`;
+        }).join('');
+
+        // Inicializa o Swiper idêntico ao dos patrocinadores
+        new Swiper('.swiper', { 
+            slidesPerView: 'auto', 
+            spaceBetween: 25, 
+            centeredSlides: true, 
+            loop: listaCards.length > 1, 
+            grabCursor: true 
+        });
+      } catch (e) { console.error("Erro ao carregar as histórias:", e); }
+    }
+    
+    carregarHistorias();
+  </script>
+</body>
+</html>
