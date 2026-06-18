@@ -94,19 +94,16 @@
 
   <div class="arrasta-indicador">CONHEÇA NOSSOS GRÃOS ➔</div>
 
-  <!-- CARROSSEL DE HISTÓRIAS -->
   <div class="swiper">
     <div class="swiper-wrapper" id="track"></div>
   </div>
 
-  <!-- LINK PARA O SEU CARDÁPIO PRINCIPAL -->
   <div class="footer-action">
     <a href="https://cardapiocoffeeartes.pedidoon.net/" class="btn-cardapio">
         🛒 IR PARA O CARDÁPIO
     </a>
   </div>
 
-  <!-- POP-UP DA HISTÓRIA -->
   <div id="modalHistoria" class="modal" onclick="fecharModalExterno(event)">
     <div class="modal-content">
         <button class="modal-fechar" onclick="fecharModal()">×</button>
@@ -120,13 +117,11 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    // Substitua o link abaixo pela nova URL do Google Sheets publicada como .csv
-    const CSV_HISTORIAS_URL = 'SUA_NOVA_URL_DO_GOOGLE_SHEETS_AQUI';
+    // Link da sua planilha já configurado
+    const CSV_HISTORIAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQopJa1EmJJ43rz6gcZem_2vSA7A3p9sottt3BpNCd4pexNqyNrdKQoO7RCCL2qkLjvhsG5qPVJqkHU/pub?output=csv';
     
-    // Mantém a limpeza padrão preservando quebras de linha internas
     function limpar(t) { return t ? t.replace(/^"|"$/g, '').trim() : ""; }
 
-    // CONTROLE DO POP-UP (MODAL)
     function abrirModal(foto, historia) {
         document.getElementById('modalTexto').innerText = historia;
         document.getElementById('modalImg').src = foto;
@@ -137,22 +132,36 @@
 
     async function carregarHistorias() {
       try {
-        const res = await fetch(CSV_HISTORIAS_URL + (CSV_HISTORIAS_URL.includes('?') ? '&' : '?') + 't=' + new Date().getTime());
+        const res = await fetch(CSV_HISTORIAS_URL + '&t=' + new Date().getTime());
         const data = await res.text();
-        const rows = data.split(/\r?\n/);
         
+        // TRATAMENTO AVANÇADO DE CSV: Garante que quebras de linha dentro do texto não quebrem o carrossel
+        const linhas Validas = [];
+        let linhaAtual = "";
+        let dentroDeAspas = false;
+
+        for (let i = 0; i < data.length; i++) {
+          const char = data[i];
+          if (char === '"') dentroDeAspas = !dentroDeAspas;
+          
+          if ((char === '\n' || char === '\r') && !dentroDeAspas) {
+            if (linhaAtual.trim()) linhasValidas.push(linhaAtual);
+            linhaAtual = "";
+          } else {
+            linhaAtual += char;
+          }
+        }
+        if (linhaAtual.trim()) linhasValidas.push(linhaAtual);
+
         let listaCards = [];
 
-        // Ignora a linha 1 de cabeçalho (Foto / Historia)
-        for (let i = 1; i < rows.length; i++) {
-          if (!rows[i]) continue;
-          
-          // Regex para separar Coluna A e Coluna B sem quebrar os parágrafos entre aspas
-          const cols = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        // Ignora o cabeçalho (i = 1)
+        for (let i = 1; i < linhasValidas.length; i++) {
+          const cols = linhasValidas[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
           if (cols.length < 2) continue;
 
-          const foto = limpar(cols[0]);       // Coluna A (Link da Imagem)
-          const historia = limpar(cols[1]);   // Coluna B (Texto Completo)
+          const foto = limpar(cols[0]);       
+          const historia = limpar(cols[1]);   
 
           if (foto.includes("http")) {
              listaCards.push({ foto, historia });
@@ -162,7 +171,6 @@
         if (listaCards.length === 0) return;
 
         document.getElementById("track").innerHTML = listaCards.map((item, index) => {
-          // Usamos uma variável global temporária para evitar que as quebras de linha quebrem o HTML do botão onClick
           window[`historia_${index}`] = item.historia;
           
           return `
@@ -174,7 +182,6 @@
             </div>`;
         }).join('');
 
-        // Inicializa o Swiper idêntico ao dos patrocinadores
         new Swiper('.swiper', { 
             slidesPerView: 'auto', 
             spaceBetween: 25, 
