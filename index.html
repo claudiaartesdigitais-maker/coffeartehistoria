@@ -135,8 +135,8 @@
         const res = await fetch(CSV_HISTORIAS_URL + '&t=' + new Date().getTime());
         const data = await res.text();
         
-        // TRATAMENTO AVANÇADO DE CSV: Garante que quebras de linha dentro do texto não quebrem o carrossel
-        const linhas Validas = [];
+        // CORRIGIDO: Variável unificada sem espaço para evitar travamento
+        const linhasValidas = [];
         let linhaAtual = "";
         let dentroDeAspas = false;
 
