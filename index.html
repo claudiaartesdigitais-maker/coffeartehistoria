@@ -62,7 +62,7 @@
     
     .contador-numero {
       font-size: 13px; font-weight: bold; color: #4a332d;
-      font-family: monospace, sans-serif; min-width: 10px;
+      font-family: sans-serif; min-width: 10px;
     }
 
     /* BOTÃO INTERNO SAIBA MAIS */
@@ -140,53 +140,37 @@
   <script>
     const CSV_HISTORIAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQopJa1EmJJ43rz6gcZem_2vSA7A3p9sottt3BpNCd4pexNqyNrdKQoO7RCCL2qkLjvhsG5qPVJqkHU/pub?output=csv';
     
-    // Identificador único para a sua contagem não misturar com outros sites
-    const APP_NAMESPACE = 'coffeeart_historias_v1';
+    // LINK DO SEU GOOGLE APPS SCRIPT
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKg4sGAjdgi71jTFYEaP4z3zxUiJ4uplD2lY8DKAAR6LayakqfMEvaXQYoHdZBj1k4-A/exec';
 
     function limpar(t) { return t ? t.replace(/^"|"$/g, '').trim() : ""; }
 
-    // SISTEMA AVANÇADO DE SOMA DE CURTIDAS (NUVEM DE GRAÇA)
+    // FAZ A SOMA DIRETO NA SUA PLANILHA DO GOOGLE
     async function alternarCurtida(btn, id) {
         const icone = btn.querySelector('i');
         const txtContador = document.getElementById(`count-${id}`);
-        const jaCurtido = localStorage.getItem(`hist_curt_v2_${id}`) === 'sim';
+        const jaCurtido = localStorage.getItem(`hist_curt_v3_${id}`) === 'sim';
+        let acao = "";
         
+        let atual = parseInt(txtContador.innerText) || 0;
+
         if (jaCurtido) {
-            // Se já curtiu, o clique apenas remove o visual local (evita trapaça de cliques infinitos)
             btn.classList.remove('curtido');
             icone.className = 'fa-regular fa-heart';
-            localStorage.removeItem(`hist_curt_v2_${id}`);
-            // Subtrai visualmente 1 para retorno instantâneo
-            let atual = parseInt(txtContador.innerText) || 0;
+            localStorage.removeItem(`hist_curt_v3_${id}`);
             if(atual > 0) txtContador.innerText = atual - 1;
-            
-            // Avisa o servidor para diminuir
-            fetch(`https://api.countapi.xyz/update/${APP_NAMESPACE}/historia_${id}?amount=-1`).catch(() => {});
+            acao = "descurtir";
         } else {
-            // Curte de verdade e soma +1 na nuvem mundial
             btn.classList.add('curtido');
             icone.className = 'fa-solid fa-heart';
-            localStorage.setItem(`hist_curt_v2_${id}`, 'sim');
-            
-            let atual = parseInt(txtContador.innerText) || 0;
+            localStorage.setItem(`hist_curt_v3_${id}`, 'sim');
             txtContador.innerText = atual + 1;
-
-            try {
-                const res = await fetch(`https://api.countapi.xyz/hit/${APP_NAMESPACE}/historia_${id}`);
-                const json = await res.json();
-                if(json.value) txtContador.innerText = json.value;
-            } catch(e) { console.error(e); }
+            acao = "curtir";
         }
-    }
 
-    // Puxa os dados iniciais do servidor de curtidas
-    async function carregarVotosIniciais(id, elementoTxt) {
-        try {
-            const res = await fetch(`https://api.countapi.xyz/get/${APP_NAMESPACE}/historia_${id}`);
-            const json = await res.json();
-            if (json.value) elementoTxt.innerText = json.value;
-        } catch (e) {
-            elementoTxt.innerText = "0";
+        // Envia o clique em segundo plano para a planilha salvar
+        if(GOOGLE_SCRIPT_URL) {
+          fetch(`${GOOGLE_SCRIPT_URL}?id=${id}&action=${acao}`, { mode: 'no-cors' }).catch(() => {});
         }
     }
 
@@ -234,9 +218,11 @@
 
           const foto = limpar(cols[0]);       
           const historia = limpar(cols[1]);   
+          // Pega o valor da coluna C (curtidas) se ela já existir na planilha
+          const curtidasIniciais = cols[2] ? (parseInt(limpar(cols[2])) || 0) : 0;
 
           if (foto.includes("http")) {
-             listaCards.push({ foto, historia });
+             listaCards.push({ foto, historia, curtidasIniciais });
           }
         }
 
@@ -245,7 +231,7 @@
         document.getElementById("track").innerHTML = listaCards.map((item, index) => {
           window[`historia_${index}`] = item.historia;
           
-          const jaCurtido = localStorage.getItem(`hist_curt_v2_${index}`) === 'sim';
+          const jaCurtido = localStorage.getItem(`hist_curt_v3_${index}`) === 'sim';
           const classeCoracao = jaCurtido ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
           const classeBotao = jaCurtido ? 'btn-curtir curtido' : 'btn-curtir';
           
@@ -256,19 +242,13 @@
                     <button class="${classeBotao}" onclick="alternarCurtida(this, ${index})">
                       <i class="${classeCoracao}"></i>
                     </button>
-                    <span class="contador-numero" id="count-${index}">...</span>
+                    <span class="contador-numero" id="count-${index}">${item.curtidasIniciais}</span>
                 </div>
                 <img src="${item.foto}" onerror="this.src='https://via.placeholder.com/300x450?text=CoffeeArt'">
                 <button class="btn-saiba-mais" onclick="abrirModal('${item.foto}', window['historia_${index}'])">🔍 SAIBA MAIS</button>
               </div>
             </div>`;
         }).join('');
-
-        // Carrega as contagens reais da nuvem para cada item gerado
-        listaCards.forEach((item, index) => {
-            const el = document.getElementById(`count-${index}`);
-            carregarVotosIniciais(index, el);
-        });
 
         new Swiper('.swiper', { 
             slidesPerView: 'auto', 
