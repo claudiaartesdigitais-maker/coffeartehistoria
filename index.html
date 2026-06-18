@@ -33,27 +33,28 @@
       60% {transform: translateX(3px);}
     }
 
-    /* CARROSSEL GRANDE */
-    .swiper { width: 100%; height: 500px; margin-top: 5px; }
+    /* CARROSSEL AMPLIAÇÃO PARA COMPUTADOR */
+    .swiper { width: 100%; height: 560px; margin-top: 5px; }
     .swiper-slide { display: flex; justify-content: center; align-items: center; width: auto; }
     
     .card { 
       border-radius: 20px; overflow: hidden; background: #ffffff; border: 1px solid #efe4d8; 
-      display: block; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 320px; height: 450px;
+      display: block; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+      width: 360px; height: 520px; /* Aumentado para desktop */
     }
     .card img { height: 100%; width: 100%; object-fit: cover; display: block; }
 
-    /* BLOCO DO BOTÃO CURTIR + CONTADOR SOMA */
+    /* BLOCO DO BOTÃO CURTIR */
     .container-curtir {
       position: absolute; top: 15px; right: 15px;
       background: rgba(255, 255, 255, 0.95);
-      padding: 6px 12px; border-radius: 20px;
+      padding: 8px 14px; border-radius: 20px;
       display: flex; align-items: center; gap: 6px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 12;
     }
     .btn-curtir {
       background: none; border: none; padding: 0;
-      font-size: 18px; color: #888; cursor: pointer;
+      font-size: 20px; color: #888; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: transform 0.2s ease;
     }
@@ -61,27 +62,27 @@
     .btn-curtir:active { transform: scale(0.8); }
     
     .contador-numero {
-      font-size: 13px; font-weight: bold; color: #4a332d;
+      font-size: 14px; font-weight: bold; color: #4a332d;
       font-family: sans-serif; min-width: 10px;
     }
 
     /* BOTÃO INTERNO SAIBA MAIS */
     .btn-saiba-mais { 
-      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: #4a332d; color: #ffffff; padding: 12px 24px; border-radius: 30px; 
-      font-size: 14px; font-weight: bold; z-index: 10; border: 2px solid #d4a373;
+      position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
+      background: #4a332d; color: #ffffff; padding: 14px 28px; border-radius: 30px; 
+      font-size: 15px; font-weight: bold; z-index: 10; border: 2px solid #d4a373;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3); text-transform: uppercase; cursor: pointer;
       white-space: nowrap; transition: 0.2s;
     }
     .btn-saiba-mais:active { transform: translateX(-50%) scale(0.95); }
 
-    /* POP-UP (MODAL) */
+    /* POP-UP (MODAL) REVISADO */
     .modal {
       display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100vw; height: 100vh;
       background-color: rgba(0,0,0,0.75); align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
     }
     .modal-content {
-      background-color: white; border-radius: 24px; width: 90%; max-width: 380px; max-height: 82vh; 
+      background-color: white; border-radius: 24px; width: 90%; max-width: 420px; max-height: 85vh; 
       display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 12px 35px rgba(0,0,0,0.6); 
       animation: abrirModal 0.25s ease-out; position: relative; margin: auto; 
     }
@@ -89,23 +90,29 @@
     
     .modal-fechar { 
       position: absolute; top: 12px; right: 12px; background: rgba(74, 51, 45, 0.9); 
-      color: white; border: none; width: 36px; height: 36px; border-radius: 50%; 
-      font-size: 22px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; 
+      color: white; border: none; width: 40px; height: 40px; border-radius: 50%; 
+      font-size: 24px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; 
     }
     
-    .modal-img-container { width: 100%; height: 180px; min-height: 180px; position: relative; }
+    .modal-img-container { width: 100%; height: 220px; min-height: 220px; position: relative; }
     .modal-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     
-    .modal-corpo { padding: 20px; background: white; overflow-y: auto; flex-grow: 1; -webkit-overflow-scrolling: touch; }
-    .modal-titulo { font-size: 18px; font-weight: bold; color: #4a332d; text-transform: uppercase; margin: 0 0 12px 0; border-bottom: 2px solid #efe4d8; padding-bottom: 6px; }
-    .modal-texto { font-size: 14.5px; color: #444; line-height: 1.6; margin: 0; text-align: justify; white-space: pre-line; }
+    .modal-corpo { padding: 22px; background: white; overflow-y: auto; flex-grow: 1; -webkit-overflow-scrolling: touch; }
+    .modal-titulo { font-size: 20px; font-weight: bold; color: #4a332d; text-transform: uppercase; margin: 0 0 12px 0; border-bottom: 2px solid #efe4d8; padding-bottom: 6px; }
+    .modal-texto { font-size: 16px; color: #333; line-height: 1.6; margin: 0; text-align: justify; white-space: pre-line; }
     
+    /* AJUSTES RESPONSIVOS VOLTADOS PARA O CELULAR */
     @media (max-width: 600px) {
-      .swiper { height: 460px; }
-      .card { width: 280px; height: 410px; }
-      .modal-content { width: 88%; max-height: 78vh; }
-      .modal-img-container { height: 160px; min-height: 160px; }
-      .modal-corpo { padding: 16px; }
+      .swiper { height: 510px; }
+      .card { 
+        width: 340px; /* Expandido para usar melhor a largura do smartphone */
+        height: 480px; /* Fotos bem maiores no mobile */
+      }
+      .modal-content { width: 92%; max-height: 82vh; }
+      .modal-img-container { height: 190px; min-height: 190px; }
+      .modal-corpo { padding: 18px; }
+      .modal-titulo { font-size: 19px; }
+      .modal-texto { font-size: 16px; color: #222; } /* Texto principal maior e mais nítido */
     }
   </style>
 </head>
@@ -140,12 +147,10 @@
   <script>
     const CSV_HISTORIAS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQopJa1EmJJ43rz6gcZem_2vSA7A3p9sottt3BpNCd4pexNqyNrdKQoO7RCCL2qkLjvhsG5qPVJqkHU/pub?output=csv';
     
-    // LINK DO SEU GOOGLE APPS SCRIPT
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKg4sGAjdgi71jTFYEaP4z3zxUiJ4uplD2lY8DKAAR6LayakqfMEvaXQYoHdZBj1k4-A/exec';
 
     function limpar(t) { return t ? t.replace(/^"|"$/g, '').trim() : ""; }
 
-    // FAZ A SOMA DIRETO NA SUA PLANILHA DO GOOGLE
     async function alternarCurtida(btn, id) {
         const icone = btn.querySelector('i');
         const txtContador = document.getElementById(`count-${id}`);
@@ -168,13 +173,11 @@
             acao = "curtir";
         }
 
-        // Envia o clique em segundo plano para a planilha salvar
         if(GOOGLE_SCRIPT_URL) {
           fetch(`${GOOGLE_SCRIPT_URL}?id=${id}&action=${acao}`, { mode: 'no-cors' }).catch(() => {});
         }
     }
 
-    // CONTROLE DO POP-UP
     function abrirModal(foto, historia) {
         document.getElementById('modalTexto').innerText = historia;
         document.getElementById('modalImg').src = foto;
@@ -218,7 +221,6 @@
 
           const foto = limpar(cols[0]);       
           const historia = limpar(cols[1]);   
-          // Pega o valor da coluna C (curtidas) se ela já existir na planilha
           const curtidasIniciais = cols[2] ? (parseInt(limpar(cols[2])) || 0) : 0;
 
           if (foto.includes("http")) {
@@ -244,7 +246,7 @@
                     </button>
                     <span class="contador-numero" id="count-${index}">${item.curtidasIniciais}</span>
                 </div>
-                <img src="${item.foto}" onerror="this.src='https://via.placeholder.com/300x450?text=CoffeeArt'">
+                <img src="${item.foto}" onerror="this.src='https://via.placeholder.com/340x480?text=CoffeeArt'">
                 <button class="btn-saiba-mais" onclick="abrirModal('${item.foto}', window['historia_${index}'])">🔍 SAIBA MAIS</button>
               </div>
             </div>`;
